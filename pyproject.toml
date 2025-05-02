@@ -1,0 +1,14 @@
+[project]
+name = "typless-docs"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "black>=25.1.0",
+    "boto3>=1.38.7",
+    "fastapi[standard]>=0.115.12",
+    "isort>=6.0.1",
+    "pydantic>=2.11.4",
+    "sqlmodel>=0.0.24",
+]
