@@ -2,7 +2,7 @@ from datetime import date
 from typing import Optional
 
 import uvicorn
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from sqlmodel import Field, Session, SQLModel, select
 
 from src.database import sql_engine
@@ -33,6 +33,15 @@ class ProcessedDocuments(SQLModel, table=True):
     document_date: date
     # typless api returns document type in format "invoice" or "receipt" - "data_type": "STRING"
     document_type: str
+
+
+# I will use this model to update the existing entry in the database
+# all fields are optional, and user should update only data on a document
+# TODO: move this SQLModel to models.py
+class ProcessedDocumentUpdate(SQLModel):
+    document_number: Optional[str] = None
+    document_date: Optional[date] = None
+    document_type: Optional[str] = None
 
 
 # creates database table
@@ -88,6 +97,37 @@ async def read_processed_documents(
     # Execute the query at this point
     # this is similar to session.query() which is deprecated
     return session.exec(query).all()
+
+
+# TODO: add some error handling also add example for swagger ui
+# edit an existing entry (document processed data) in the database with put request
+# user can update one or more fields of the entry
+@app.put("/processed-documents/{document_id}")
+async def update_processed_document(
+    document_id: int,
+    update_data: ProcessedDocumentUpdate,
+    session: Session = Depends(get_session),
+):
+    print("Updating processed document entry in the database...")
+
+    # Get the existing document
+    db_document = session.get(ProcessedDocuments, document_id)
+    if not db_document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    # Only update fields that are provided (not None) - 0 should be updated not false (None)
+    if update_data.document_number is not None:
+        db_document.document_number = update_data.document_number
+
+    if update_data.document_date is not None:
+        db_document.document_date = update_data.document_date
+
+    if update_data.document_type is not None:
+        db_document.document_type = update_data.document_type
+
+    session.commit()
+    session.refresh(db_document)
+    return db_document
 
 
 if __name__ == "__main__":
