@@ -8,12 +8,13 @@ from sqlmodel import Field, Session, SQLModel, select
 from src.database import sql_engine
 
 
+# TODO: make some adjustments... this is not good that client must fill id... that should be auto generated
 # TODO: add example to swagger ui: http://fastapi.tiangolo.com/tutorial/schema-extra-example/#examples-in-json-schema-openapi
 # TODO: move this SQLModel to models.py
 # SQLModel - for saving processed documents to the database
 # This is a structure of the table in the database
 class ProcessedDocuments(SQLModel, table=True):
-    id: Optional[int] = Field(primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     # AWS S3 will act like archive file storage
     # uuid from AWS S3 archive - where the document is stored
     s3_uuid: str
@@ -128,6 +129,20 @@ async def update_processed_document(
     session.commit()
     session.refresh(db_document)
     return db_document
+
+
+# add delete request to remove an entry by id from the database
+@app.delete("/processed-documents/{document_id}", status_code=204)
+async def delete_processed_document(
+    document_id: int, session: Session = Depends(get_session)
+):
+    print("Deleting processed document entry from the database...")
+    db_document = session.get(ProcessedDocuments, document_id)
+    if not db_document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    session.delete(db_document)
+    session.commit()
+    return None
 
 
 if __name__ == "__main__":
