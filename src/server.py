@@ -2,12 +2,13 @@ from datetime import date
 from typing import Optional
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from sqlmodel import Field, Session, SQLModel
 
 from src.database import sql_engine
 
 
+# TODO: add example to swagger ui: http://fastapi.tiangolo.com/tutorial/schema-extra-example/#examples-in-json-schema-openapi
 # SQLModel - for saving processed documents to the database
 # This is a structure of the table in the database
 class ProcessedDocuments(SQLModel, table=True):
@@ -49,6 +50,20 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+# create a new entry in the database with a document processed/extracted data
+# TODO: add error handling - when request fails
+@app.post("/processed-documents/", status_code=201)
+async def create_processed_document(
+    processed_document: ProcessedDocuments, session: Session = Depends(get_session)
+):
+    print("Creating processed document entry in the database...")
+    # this will add a new entry to the database
+    session.add(processed_document)
+    session.commit()
+    session.refresh(processed_document)
+    return processed_document
 
 
 if __name__ == "__main__":

@@ -17,6 +17,11 @@ rye run fastapi dev src/server.py
 rye run fastapi run src/server.py
 ```
 
+## API documentation
+
+The API documentation (Swagger UI) is available at:
+http://localhost:8000/docs
+
 ## Formatting
 
 For formating we use `black` and `isort`.
