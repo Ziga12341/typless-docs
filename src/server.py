@@ -3,7 +3,9 @@ from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Session, SQLModel
+
+from src.database import sql_engine
 
 
 # SQLModel - for saving processed documents to the database
@@ -29,6 +31,16 @@ class ProcessedDocuments(SQLModel, table=True):
     document_date: date
     # typless api returns document type in format "invoice" or "receipt" - "data_type": "STRING"
     document_type: str
+
+
+# creates database table
+SQLModel.metadata.create_all(sql_engine)
+
+
+# Dependency: Get the session
+def get_session():
+    with Session(sql_engine) as session:
+        yield session  # Yield allows FastAPI to use it as a dependency
 
 
 app = FastAPI()
