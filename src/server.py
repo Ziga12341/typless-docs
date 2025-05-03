@@ -9,6 +9,7 @@ from src.database import sql_engine
 
 
 # TODO: add example to swagger ui: http://fastapi.tiangolo.com/tutorial/schema-extra-example/#examples-in-json-schema-openapi
+# TODO: move this SQLModel to models.py
 # SQLModel - for saving processed documents to the database
 # This is a structure of the table in the database
 class ProcessedDocuments(SQLModel, table=True):

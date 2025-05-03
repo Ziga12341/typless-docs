@@ -3,18 +3,25 @@
 
 This project uses `UV` as Python package and project manager, written in Rust: https://docs.astral.sh/uv/
 
-## Running the project
-
-### Running server in dev mode
-
+On macOS install with homebrew:
 ```bash
-rye run fastapi dev src/server.py
+brew install uv
 ```
 
-### Running server in production mode
+## Running the project
+
+### Running server in dev mode to reload on changes
 
 ```bash
-rye run fastapi run src/server.py
+uv run uvicorn src.server:app --reload
+```
+## Run database
+To run the database, you need to have Docker installed on your machine. Once you have Docker installed, you can run the following command from the root directory of the project:
+
+```bash
+Run from root:
+```bash
+docker compose up
 ```
 
 ## API documentation
