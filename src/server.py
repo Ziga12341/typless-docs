@@ -3,7 +3,7 @@ from typing import Optional
 
 import uvicorn
 from fastapi import Depends, FastAPI
-from sqlmodel import Field, Session, SQLModel
+from sqlmodel import Field, Session, SQLModel, select
 
 from src.database import sql_engine
 
@@ -65,6 +65,29 @@ async def create_processed_document(
     session.commit()
     session.refresh(processed_document)
     return processed_document
+
+
+# TODO: add error handling, filtering is case sensitive (not true search), missing pagination, should add sorting (not required)
+# get entries from the database with query parameters that i can search/filter by document number, date and type
+@app.get("/processed-documents/")
+async def read_processed_documents(
+    document_number: Optional[str] = None,
+    document_date: Optional[date] = None,
+    document_type: Optional[str] = None,
+    session: Session = Depends(get_session),
+):
+    print("Reading processed documents from the database...")
+    query = select(ProcessedDocuments)
+    if document_number:
+        query = query.where(ProcessedDocuments.document_number == document_number)
+    if document_date:
+        query = query.where(ProcessedDocuments.document_date == document_date)
+    if document_type:
+        query = query.where(ProcessedDocuments.document_type == document_type)
+
+    # Execute the query at this point
+    # this is similar to session.query() which is deprecated
+    return session.exec(query).all()
 
 
 if __name__ == "__main__":
