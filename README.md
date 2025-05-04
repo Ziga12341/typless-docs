@@ -31,13 +31,13 @@ http://localhost:8000/docs
 
 ## How processing in this project works
 
-PDF documents are stored in S3 bucket. This bucket act like an external source. You can get all documents names sored in bucket in this api: `/s3/documents/all`
-The same documents are also stored locally in the `data/inciuces` folder (this is used for testing/mocking).
-For processing and saving the documents, we use the `/process-and-save-document/` endpoint. There are predefined parameters for this endpoint:file, document_type_name, s3_uuid, document_url.
-To process other documents that you get from the `/s3/documents/all` endpoint, you need to set file query parameter in `/process-and-save-document/` endpoint to the path of the document you want to process. like this: `file=data/invoices/{invoice you get}.pdf)`.
-Document type name is just one `"demo-invoice"` and is hardcoded in code. Mocking all documents with this document type.
-After processing, the documents are stored in the database.
-You can edit, delete or get the documents (with search query parameters) available through api endpoints via swagger UI: http://localhost:8000/docs
+- PDF documents are stored in S3 bucket. This bucket act like an external source. You can get all documents names sored in bucket in this api: `/s3/documents/all`
+- The same documents are also stored locally in the `data/inciuces` folder (this is used for testing/mocking).
+- For processing and saving the documents, we use the `/process-and-save-document/` endpoint. There are predefined parameters for this endpoint:file, document_type_name, s3_uuid, document_url.
+- To process other documents that you get from the `/s3/documents/all` endpoint, you need to set file query parameter in `/process-and-save-document/` endpoint to the path of the document you want to process. like this: `file=data/invoices/{invoice you get}.pdf)`.
+- Document type name is just one `"demo-invoice"` and is hardcoded in code. Mocking all documents with this document type.
+- After processing, the documents are stored in the database.
+- You can edit, delete or get the documents (with search query parameters) available through api endpoints via swagger UI: http://localhost:8000/docs
 
 ## Requirements for running the project (answering the questions from technical assignment)
 
