@@ -1,21 +1,18 @@
 """
-I create a new document type in the Typless dashboard (https://app.typless.com/) for the invoice named invoice_10248.pdf. I created a new document type named demo-invoice.
+I create a new document type in the Typless dashboard (https://app.typless.com/) for the invoice named              invoice_10248.pdf. I created a new document type named demo-invoice.
 I will use this document type to test the document processing and extraction in this project.
 
 for async use data extraction: https://docs.typless.com/reference/post-extract-data-async
 and https://docs.typless.com/reference/get-get-extraction-data
+when using async endpoint use tupless notification webhook for optimal asynchronous usage: https://docs.typless.com/docs/webhooks
 """
 
 import base64
 
 import requests
 from dotenv import load_dotenv
-from src.config import TYPLESS_API_KEY
 
-load_dotenv()
-file_name = "invoice_10248.pdf"
-file_name_2 = "invoice_10249.pdf"
-document_type_name = "demo-invoice"
+from src.config import TYPLESS_API_KEY
 
 
 # TODO: add error handling - when request fails, add docs for function.
@@ -54,9 +51,16 @@ def process_document(file_name, document_type_name):
     return response.json()
 
 
-process_pdf_1 = process_document(
-    file_name=file_name, document_type_name=document_type_name
-)
-print(f"object_id: {process_pdf_1["object_id"]}")
-for field in process_pdf_1["extracted_fields"]:
-    print(f'{field["name"]}: {field["values"][0]["value"]}')
+if __name__ == "__main__":
+    from typless_parser import parse_response
+
+    file_name = "invoice_10248.pdf"  # invoice_number: 10248
+    file_name_2 = "invoice_10249.pdf"  # invoice_number: 10249
+    document_type_name = "demo-invoice"
+    process_pdf_1 = process_document(
+        file_name=file_name, document_type_name=document_type_name
+    )
+    print(parse_response(process_pdf_1))
+    print(f"object_id: {process_pdf_1["object_id"]}")
+    for field in process_pdf_1["extracted_fields"]:
+        print(f'{field["name"]}: {field["values"][0]["value"]}')
