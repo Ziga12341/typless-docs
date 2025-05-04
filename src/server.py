@@ -8,7 +8,7 @@ from sqlmodel import Field, Session, SQLModel, select
 from src.database import sql_engine
 
 
-# TODO: make some adjustments... this is not good that client must fill id... that should be auto generated
+# TODO: id is set to None in post request, but it will be better to create separate model for read create (with noid), read (with id) and data base model for autogenerate id as primary key
 # TODO: add example to swagger ui: http://fastapi.tiangolo.com/tutorial/schema-extra-example/#examples-in-json-schema-openapi
 # TODO: move this SQLModel to models.py
 # SQLModel - for saving processed documents to the database
@@ -49,6 +49,9 @@ class ProcessedDocumentUpdate(SQLModel):
 SQLModel.metadata.create_all(sql_engine)
 
 
+# TODO: database operations are running synchronously -
+#  if you have async api calls to the database, you should use async session
+#  use create_async_engine, AsyncSession from sqlalchemy or use synchronous requests
 # Dependency: Get the session
 def get_session():
     with Session(sql_engine) as session:
@@ -69,6 +72,9 @@ def read_root():
 async def create_processed_document(
     processed_document: ProcessedDocuments, session: Session = Depends(get_session)
 ):
+    # Ensure ID is None to let the database auto-generate it
+    # TODO: it you will add sqlmodel for read and create, you can remove this line
+    processed_document.id = None
     print("Creating processed document entry in the database...")
     # this will add a new entry to the database
     session.add(processed_document)
