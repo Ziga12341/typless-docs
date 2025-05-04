@@ -18,7 +18,7 @@ uv run uvicorn src.server:app --reload
 ## Run database
 To run the database, you need to have Docker installed on your machine. Once you have Docker installed, you can run the following command from the root directory of the project:
 
-```bash
+
 Run from root:
 ```bash
 docker compose up
