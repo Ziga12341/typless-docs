@@ -5,6 +5,8 @@ import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from sqlmodel import Field, Session, SQLModel, select
 
+from src.aws_s3 import s3_client
+from src.config import BUCKET_NAME
 from src.database import sql_engine
 from src.typless.typless_extract_data import process_document
 from src.typless.typless_parser import parse_response
@@ -66,6 +68,22 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+# TODO: download the file from AWS S3 bucket and push it to queue for processing to Typless API
+#  (save processed data to db) and save it to another archive S3 bucket (save link and uuid to the database)
+@app.get("/s3/documents/all", summary="List all documents in S3 bucket")
+def list_all_documents_from_s3():
+    paginator = s3_client.get_paginator("list_objects_v2")
+    params = {"Bucket": BUCKET_NAME}
+
+    all_keys = []
+    for page in paginator.paginate(**params):
+        for obj in page.get("Contents", []):
+            # get the name of the object - like PDF
+            all_keys.append(obj["Key"])
+
+    return all_keys
 
 
 # TODO: reed pdf file from AWS S3 bucket (or from some kind of queue) and process it
