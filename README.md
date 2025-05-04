@@ -45,3 +45,10 @@ source .venv/bin/activate
 black .
 isort .
 ```
+
+### PDF invoices Dataset source
+I got invoices PDFs that I want to process with Typless here on [kaggle](https://www.kaggle.com/datasets/ayoubcherguelaine/company-documents-dataset)
+
+### Typless API
+
+I trained new document type on [Typless app](https://app.typless.com/). Than use this document type named `demo-invoice` to process documents.
