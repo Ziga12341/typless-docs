@@ -53,6 +53,7 @@ class ProcessedDocumentUpdate(SQLModel):
 SQLModel.metadata.create_all(sql_engine)
 
 
+# removed the async from the function
 # TODO: database operations are running synchronously -
 #  if you have async api calls to the database, you should use async session
 #  use create_async_engine, AsyncSession from sqlalchemy or use synchronous requests
@@ -95,11 +96,10 @@ document_url = "https://aws-s3-bucket-url.com/invoice_10248.pdf"  # this will be
 document_type_name = "demo-invoice"
 
 
-# TODO remove async from the function if you are not using async
 # TODO: add error handling - around the typless api call and database operations
 # automatically process the document and extract data from it with Typless API
 @app.post("/process-and-save-document/", status_code=201)
-async def process_and_save_document(
+def process_and_save_document(
     file: str = file,
     document_type_name: str = document_type_name,
     s3_uuid: str = s3_uuid,
@@ -142,7 +142,7 @@ async def process_and_save_document(
 # create a new entry in the database with a document processed/extracted data
 # TODO: add error handling - when request fails
 @app.post("/processed-documents/", status_code=201)
-async def create_processed_document(
+def create_processed_document(
     processed_document: ProcessedDocuments, session: Session = Depends(get_session)
 ):
     # Ensure ID is None to let the database auto-generate it
@@ -161,7 +161,7 @@ async def create_processed_document(
 # TODO: add error handling, filtering is case sensitive (not true search), missing pagination, should add sorting (not required)
 # get entries from the database with query parameters that i can search/filter by document number, date and type
 @app.get("/processed-documents/")
-async def read_processed_documents(
+def read_processed_documents(
     document_number: Optional[str] = None,
     document_date: Optional[date] = None,
     document_type: Optional[str] = None,
@@ -185,7 +185,7 @@ async def read_processed_documents(
 # edit an existing entry (document processed data) in the database with put request
 # user can update one or more fields of the entry
 @app.put("/processed-documents/{document_id}")
-async def update_processed_document(
+def update_processed_document(
     document_id: int,
     update_data: ProcessedDocumentUpdate,
     session: Session = Depends(get_session),
@@ -214,7 +214,7 @@ async def update_processed_document(
 
 # add delete request to remove an entry by id from the database
 @app.delete("/processed-documents/{document_id}", status_code=204)
-async def delete_processed_document(
+def delete_processed_document(
     document_id: int, session: Session = Depends(get_session)
 ):
     print("Deleting processed document entry from the database...")
